@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Mi Biblioteca</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0b1220">
+
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Si quieres mantener estilos extra en un archivo separado, descomenta:
+  <link rel="stylesheet" href="extra.css">
+  -->
+</head>
+
+<body>
+
+<!-- LOGIN OVERLAY (con iconos y toggle mostrar contraseña) -->
+<style>
+  /* Overlay */
+#loginOverlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    background: linear-gradient(90deg, #000000c7, #12a9bf, #000000), url(https://cdn.pixabay.com/photo/2016/02/16/21/07/christmas-background-1204029_1280.jpg) no-repeat center center;
+    background-size: cover;
+    color: #fff;
+    padding: 18px;
+}
+
+
+#loginCard {
+    width: 100%;
+    max-width: 460px;
+    background: -webkit-linear-gradient(90deg, #1b0b20, #2f0246);
+    background: linear-gradient(90deg, #1b0b20, #12b1c7);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    text-align: center;
+}
+
+
+  #loginLogo { width:84px; height:84px; object-fit:contain; margin: 6px auto 8px; display:block; border-radius:10px; }
+  #loginCard h2 { margin:6px 0 2px; font-size:20px; }
+  #loginCard p { margin:0 0 12px; opacity:0.9; font-size:13px; }
+
+  /* Input wrapper con icono */
+  .inputWithIcon { position:relative; margin:8px 0; display:flex; align-items:center; }
+  .inputWithIcon .leftIcon {
+    position:absolute; left:10px; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; opacity:0.95;
+  }
+  .inputWithIcon input {
+    width:100%; padding:10px 40px 10px 38px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);
+    background:transparent; color:#fff; font-size:14px;
+  }
+  .inputWithIcon .togglePwdBtn {
+    position:absolute; right:8px; height:34px; min-width:34px; display:inline-flex; align-items:center; justify-content:center;
+    border-radius:6px; background:transparent; border:0; color:#fff; cursor:pointer; padding:4px;
+  }
+  #loginForm button[type="submit"] {
+    width:100%; padding:10px; margin-top:10px; border-radius:8px; border:0; 
+    background: -webkit-linear-gradient(90deg, #000000,#000000,#021392);background: linear-gradient(90deg, #000000,#000000,#021392);
+    color:#fff; font-weight:600;
+  }
+
+  #loginInfo { font-size:13px; margin-top:8px; opacity:0.95; }
+  #loginLockMsg { margin-top:8px; color:#ffb3b3; font-weight:700; }
+  #loginSmall { font-size:12px; opacity:0.85; margin-top:6px; }
+
+  /* SVG sizing */
+  .iconSvg { width:18px; height:18px; display:block; }
+  /* small responsive tweak */
+  @media (max-width:420px){ #loginCard{padding:16px} .inputWithIcon input{padding-left:36px} }
+</style>
+
+<div id="loginOverlay" role="dialog" aria-modal="true" aria-label="Login administrador">
+  <div id="loginCard" role="document">
+    <img id="loginLogo" src="https://iili.io/K0DE04R.png" alt="Logo app" />
+    <h2>ORLANDO CÓRDOVA</h2>
+    <p>Datos de usuario</p>
+
+    <form id="loginForm" autocomplete="on" novalidate>
+      <div class="inputWithIcon">
+        <div class="leftIcon" aria-hidden="true">
+          <!-- icono correo -->
+          <svg class="iconSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16v16H4z"></path>
+            <path d="M22 6l-10 7L2 6"></path>
+          </svg>
+        </div>
+        <input id="loginEmail" type="email" placeholder="Correo electrónico" autocomplete="username" required />
+      </div>
+
+      <div class="inputWithIcon" style="margin-bottom:4px;">
+        <div class="leftIcon" aria-hidden="true">
+          <!-- icono candado -->
+          <svg class="iconSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <input id="loginPassword" type="password" placeholder="Contraseña" autocomplete="current-password" required />
+        <button type="button" class="togglePwdBtn" id="togglePwdBtn" aria-label="Mostrar contraseña" title="Mostrar contraseña">
+          <!-- ojo / ojo tachado SVG (cambia dinámicamente) -->
+          <svg id="eyeIcon" class="iconSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+
+      <button id="loginBtn" type="submit">Iniciar sesión</button>
+    </form>
+
+    <div id="loginInfo">
+      <div id="loginAttempts">Intentos: 0 / 3</div>
+      <div id="loginLockMsg" aria-live="polite"></div>
+      <div id="loginSmall">Si superas 3 intentos, se bloqueará 15 minutos en este dispositivo.</div>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <div class="app" id="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="profile" id="topProfile">
+          <div class="avatar" id="topAvatar"><img id="topAvatarImg" src="" alt="avatar" style="display:none" /></div>
+          <div>
+            <div class="title" id="appTitle">Mi Biblioteca</div>
+            <div class="sub" id="appSub">Gestiona, sube y comparte tus libros</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" id="addQuickBtn">+ Añadir</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <main class="content" id="main">
+        <!-- SECCION HOME -->
+        <section id="home" class="section">
+          <div class="card">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div>
+                <h2 style="margin:0" id="welcomeTitle">Bienvenido a tu biblioteca</h2>
+                <div class="small muted">Creado por Sysaccessvip.</div>
+              </div>
+              <div class="right small muted">N° de libros: <span id="totalBooks">0</span></div>
+            </div>
+
+<!-- CONTROLES ORDENADOS -->
+<div style="margin-top:12px;" class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-weight:700">Añadir rápido</div>
+    <div class="small muted">Sube o escribe ISBN para autocompletar</div>
+  </div>
+
+  <!-- Contenedor principal con 3 columnas -->
+  <div class="home-controls" style="margin-top:12px;">
+    <!-- Columna 1: Subir imagen ISBN/QR -->
+    <div class="control control-image">
+      <label>Subir imagen de ISBN / QR</label>
+      <div class="control-row">
+        <input type="file" id="isbnImageInput" accept="image/*" />
+        <button class="btn" id="processImageBtn">Procesar</button>
+      </div>
+      <div class="small muted" id="imageHelp">Sube una foto del código ISBN (barra) o del QR para autocompletar.</div>
+    </div>
+
+    <!-- Columna 2: Ingresar ISBN manualmente -->
+    <div class="control control-manual">
+      <label>Ingresar ISBN manualmente</label>
+      <div class="control-row">
+        <input type="text" id="manualIsbnInput" placeholder="Ej: 9788403099227" />
+        <button class="btn ghost" id="manualIsbnBtnHome">Usar ISBN</button>
+      </div>
+      <div class="small muted">Puedes escribir el ISBN si no quieres subir la imagen.</div>
+    </div>
+
+
+
+<!-- Columna 3: Generar QR desde ISBN + Buscador Iberlibro -->
+<div class="control control-qr">
+  <label>Generar QR de un ISBN</label>
+  <div class="control-row">
+    <input type="text" id="qrIsbnInput" placeholder="ISBN (ej:9780140449136)" />
+    <button class="btn ghost" id="genQrIsbnBtn">Generar</button>
+  </div>
+  <div class="small muted">Genera un enlace QR apuntando al libro.</div>
+
+  <!-- Div donde se mostrará QR temporal (si el usuario genera manualmente) -->
+  <div id="qrGenBox" style="margin-top:8px;"></div>
+
+  <!-- NUEVO: buscador Iberlibro por ISBN -->
+  <div style="margin-top:12px; border-top:1px dashed rgba(255,255,255,0.04); padding-top:10px;">
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input id="searchIberIsbnInput" type="text" placeholder="Buscar en Iberlibro por ISBN (ej:9780140449136)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;" />
+      <button id="searchIberBtn" class="btn ghost">Buscar Iberlibro</button>
+    </div>
+    <div id="iberSearchStatus" class="small muted" style="margin-top:8px;">Introduce un ISBN y pulsa Buscar.</div>
+  </div>
+</div>
+
+
+
+
+  </div>
+</div>
+<!-- /CONTROLES ORDENADOS -->
+
+          <div style="margin-top:12px;" class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-weight:700">Últimos añadidos</div>
+              <div class="small muted">Ordenados por fecha</div>
+            </div>
+
+            <div id="recentBooks" class="books-grid" style="margin-top:12px;"></div>
+          </div>
+
+        </section>
+
+
+
+
+
+
+        <!-- SECCION ADD -->
+        <section id="add" class="section" style="display:none;">
+          <div class="card">
+            <div class="add-header">
+              <div>
+                <h3 style="margin:0">Añadir libro</h3>
+                <div class="small muted">Puedes escribir los datos o usar el ISBN para autocompletar</div>
+              </div>
+              <div class="actions-row">
+                <button class="ghost" id="closeAddBtn">Cerrar</button>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;">
+              <div class="form-row">
+                <div class="field">
+                  <label>Título</label>
+                  <input type="text" id="title" placeholder="Título del libro" />
+                </div>
+                <div class="field">
+                  <label>Autor(es)</label>
+                  <input type="text" id="authors" placeholder="Separar por comas" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label>ISBN / Código</label>
+                  <input type="text" id="isbn" placeholder="978xxxxxxxxx" />
+                </div>
+                <div class="field">
+                  <label>Categorías / Etiquetas (separadas por comas)</label>
+                  <input list="tagsList" type="text" id="tags" placeholder="ej:novela,historia,programación" />
+                  <datalist id="tagsList"></datalist>
+                </div>
+              </div>
+
+              <div class="form-row">
+
+<div class="field">
+  <label>Portada (opcional)</label>
+  <!-- Selector de archivo -->
+  <input type="file" id="coverFile" accept="image/*" />
+
+  <!-- Opción pegar URL -->
+  <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+    <input type="url" id="coverUrlInput" placeholder="Pegar URL de portada (ej: https://...jpg)" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;" />
+    <button type="button" class="ghost" id="useCoverUrlBtn">Usar URL</button>
+  </div>
+
+  <!-- Preview -->
+  <div style="margin-top:8px;">
+    <img id="coverPreviewImg" src="" alt="Preview portada" style="display:none;max-width:140px;border-radius:6px" />
+  </div>
+  <div class="small muted">Puedes subir un archivo o pegar la URL de la imagen.</div>
+</div>
+
+
+
+                <div class="field">
+                  <label>Archivo del libro (pdf, epub) (opcional)</label>
+                  <input type="file" id="bookFile" accept=".pdf,.epub,.mobi" />
+                </div>
+              </div>
+
+<!-- REEMPLAZADO: Fechas, calificación y progreso de lectura -->
+<div class="form-row">
+  <div class="field">
+    <label>Fecha inicio de lectura</label>
+    <input type="date" id="readingStart" />
+  </div>
+  <div class="field">
+    <label>Fecha fin de lectura</label>
+    <input type="date" id="readingEnd" />
+  </div>
+  <div class="field">
+    <label>Calificación</label>
+    <select id="rating">
+      <option value="">-- Sin calificar --</option>
+      <option value="malo">Malo</option>
+      <option value="regular">Regular</option>
+      <option value="bueno">Bueno</option>
+      <option value="muy_bueno">Muy bueno</option>
+    </select>
+  </div>
+</div>
+
+<!-- NUEVO: campos para páginas / avance -->
+<div class="form-row" style="align-items:center;">
+
+<div class="field">
+  <label>Total de páginas (detectado)</label>
+  <input type="number" id="totalPages" placeholder="Total (páginas)" min="1" step="1" inputmode="numeric" />
+</div>
+
+
+  <div class="field">
+    <label>Página actual</label>
+    <input type="number" id="currentPage" placeholder="En qué página estás (ej: 45)" min="0" />
+  </div>
+
+  <div class="field">
+    <label>Estado de lectura</label>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <label style="display:flex;align-items:center;gap:6px;">
+        <input type="checkbox" id="finishedReading" /> <span class="small">He terminado</span>
+      </label>
+      <div class="small muted" style="margin-left:auto;">El progreso aparecerá debajo de la calificación.</div>
+    </div>
+  </div>
+</div>
+
+              <div class="form-row">
+                <div class="field">
+                  <label>Opinión</label>
+                  <textarea id="description" rows="4" placeholder="Comentario..."></textarea>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn" id="saveBookBtn">Guardar libro</button>
+                <button class="btn ghost" id="isbnFetchBtn">Buscar por ISBN</button>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCION LIBRARY -->
+        <section id="library" class="section" style="display:none;">
+
+<!-- HEADER LIBRARY -->
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:240px;">
+    <input
+      type="search"
+      id="filterInput"
+      placeholder="Buscar por título, autor o ISBN"
+      aria-label="Buscar libros"
+      style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;"
+    />
+    <button class="ghost" id="clearFilterBtn" title="Limpiar búsqueda">Limpiar</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;">
+    <h3 style="margin:0">Mi biblioteca</h3>
+    <div>
+      <select id="perPageSelect">
+        <option value="6">6 por página</option>
+        <option value="12" selected>12 por página</option>
+        <option value="24">24 por página</option>
+      </select>
+    </div>
+  </div>
+</div>
+<!-- /HEADER LIBRARY -->
+
+          <div id="booksList" class="books-grid"></div>
+
+          <div class="pagination" id="pagination"></div>
+        </section>
+
+        <!-- SECCION CATEGORIES -->
+        <section id="categories" class="section" style="display:none;">
+          <div class="card">
+            <h3>Categorías</h3>
+            <div id="categoriesList" style="margin-top:12px;"></div>
+          </div>
+        </section>
+
+        <!-- SECCION SETTINGS -->
+        <section id="settings" class="section" style="display:none;">
+          <div class="card">
+            <h3>Ajustes</h3>
+            <p class="muted">Configuración básica</p>
+            <div style="margin-top:10px;">
+              <div class="form-row">
+                <div class="field">
+                  <label>Nombre de perfil</label>
+                  <input type="text" id="profileName" placeholder="Tu nombre (aparecerá en inicio)" />
+                </div>
+                <div class="field">
+                  <label>Foto de perfil</label>
+                  <input type="file" id="profilePhoto" accept="image/*" />
+                </div>
+              </div>
+
+              <div style="margin-top:8px;">
+                <button class="btn" id="saveProfileBtn">Guardar perfil</button>
+                <button class="ghost" id="clearProfileBtn">Borrar perfil</button>
+              </div>
+
+<!-- BACKUP: Exportar / Importar -->
+<div style="margin-top:14px;" class="card">
+  <h4>Respaldo de datos</h4>
+  <div class="small muted">Exporta o importa un archivo .json con tus libros y perfil.</div>
+
+  <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;">
+    <button class="btn" id="exportBackupBtn">Exportar respaldo (.json)</button>
+
+    <label class="ghost" style="display:flex;gap:8px;align-items:center;padding:6px;border-radius:6px;cursor:pointer;">
+      <input type="file" id="importBackupInput" accept=".json" style="display:none" />
+      <span id="importBackupLabel">Seleccionar archivo .json</span>
+    </label>
+
+    <button class="ghost" id="importBackupBtn">Importar respaldo</button>
+
+    <label style="margin-left:8px;display:flex;gap:6px;align-items:center;">
+      <input type="checkbox" id="importReplaceCheckbox" />
+      <span class="small muted">Reemplazar todos los datos (si no, fusiona)</span>
+    </label>
+  </div>
+
+  <div class="small muted" style="margin-top:8px;">
+    Recomendación: descarga el respaldo regularmente. Si vas a reemplazar, asegúrate de tener copia.
+  </div>
+</div>
+<!-- /BACKUP -->
+
+              <div style="margin-top:12px;">
+                <div class="small muted">Al guardar el perfil, el nombre y la foto aparecerán en la cabecera.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Modal / Panel detalle libro -->
+        <div id="detailModal">
+          <div class="card" style="height:100%; overflow:auto; padding:18px;">
+            <button style="border:0;background:transparent;float:right;font-weight:700" id="closeDetail">Cerrar ✕</button>
+            <div id="detailContent"></div>
+          </div>
+        </div>
+
+
+<!-- SECCION POR-TERMINAR (lista independiente de libros pendientes) -->
+<section id="por-terminar" class="section" style="display:none;">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div>
+        <h3 style="margin:0">Libros por terminar</h3>
+        <div class="small muted">Libros que no están marcados como leídos — ordenados por proximidad al final</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="small muted">Total: <span id="porTerminarTotal">0</span></div>
+      </div>
+    </div>
+
+    <div id="porTerminarList" class="books-grid" style="margin-top:12px;"></div>
+
+    <div id="porTerminarPagination" class="pagination" style="margin-top:12px;"></div>
+  </div>
+</section>
+
+<!-- SECCIÓN POR AÑO (independiente de LIBRARY) -->
+<section id="por-ano" class="section" style="display:none;">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div>
+        <h3 style="margin:0">Libros por año</h3>
+        <div class="small muted">Selecciona un año para ver los libros leídos en ese año</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <label class="small muted" for="porAnoSelect">Año:</label>
+        <select id="porAnoSelect" style="padding:6px;border-radius:6px;border:1px solid #ccc;"></select>
+        <div class="small muted" style="margin-left:10px">Total: <strong id="porAnoTotal">0</strong></div>
+      </div>
+    </div>
+
+    <div id="porAnoList" class="books-grid" style="margin-top:12px;"></div>
+    <div id="porAnoPagination" class="pagination" style="margin-top:12px;"></div>
+  </div>
+</section>
+
+
+
+      </main>
+    </div>
+  </div>
+
+  <!-- bottom nav (móvil) -->
+  <nav id="bottomNav" class="bottom-nav" aria-label="Navegación inferior">
+    <button class="bn-item" data-section="home" title="Inicio">
+      <svg viewBox="0 0 24 24"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V11.5z" fill="currentColor"></path></svg>
+      <span>Inicio</span>
+    </button>
+
+<button class="bn-item" data-section="por-terminar" id="porTerminarBtn" title="Ver libros por terminar">
+  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+  <span>Por terminar</span>
+</button>
+
+
+<button class="bn-item" data-section="por-ano" id="porAnoBtn" title="Libros por año">
+  <svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 9h18v12H3z" fill="currentColor"></path></svg>
+  <span>Por año</span>
+</button>
+
+
+
+    <button class="bn-item" data-section="library" title="Biblioteca">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18v13H3zM7 6V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2" stroke="currentColor" stroke-width="1.4" fill="none"></path></svg>
+      <span>Libros</span>
+    </button>
+    <button class="bn-item" data-section="categories" title="Categorías">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.6"></path></svg>
+      <span>Cats</span>
+    </button>
+    <button class="bn-item" data-section="settings" title="Ajustes">
+      <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" stroke="currentColor" stroke-width="1.2" fill="none"></path></svg>
+      <span>Ajustes</span>
+    </button>
+  </nav>
+
+  <!-- toast + confirm -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <div id="confirmModal" style="display:none; align-items:center;">
+    <div class="confirmBox">
+      <div id="confirmText">¿Confirmar?</div>
+      <div class="confirmActions">
+        <button class="ghost" id="confirmNoBtn">Cancelar</button>
+        <button class="btn" id="confirmYesBtn">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Librerias externas -->
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <!-- QuaggaJS: excelente para EAN-13/barcodes de libros -->
+  <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+
+  <!-- QR code generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- jsQR fallback para QR -->
+  <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script>
+  <!-- ePub.js para lectura .epub -->
+  <script src="https://unpkg.com/epubjs/dist/epub.min.js"></script>
+
+
+  <!-- SCRIPTS -->
+  <!-- script.js contiene utilidades y el lugar para pegar JS (o cargar extra.js) -->
+  <script src="script.js" defer></script>
+
+  <!-- Si prefieres mantener tu código en extra.js, carga extra.js después del principal:
+  <script src="extra.js" defer></script>
+  -->
+
+  <!-- Nota: si tu código necesita ejecutar algo inmediatamente antes de load,
+       puedes añadir un pequeño bloque inline aquí. -->
+</body>
+</html>

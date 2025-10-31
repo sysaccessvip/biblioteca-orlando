@@ -1,0 +1,409 @@
+    :root{
+      --bg:#f7f3ee;
+      --paper:#fffaf2;
+      --accent:#6b4f32;
+      --accent-2:#a67c52;
+      --muted:#8b7d72;
+      --card-shadow: 0 6px 18px rgba(99,81,63,0.12);
+      --radius:14px;
+      --ui-contrast: #ffffff;
+    }
+    html,body{ height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg, var(--bg), #f3efe8); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; color:#32251d; -webkit-tap-highlight-color: transparent; }
+   
+.app {
+    max-width: 980px;
+    margin: 12px auto;
+    background: #47daf9;
+    border-radius: 18px;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 80vh;
+}
+   
+    .topbar{ display:flex; align-items:center; gap:12px; padding:12px 16px; background:linear-gradient(90deg, rgba(107,79,50,0.06), rgba(166,124,82,0.02)); border-bottom:1px solid rgba(0,0,0,0.03); position:relative; z-index:40; }
+    .brand{ display:flex; gap:10px; align-items:center; flex:1; }
+    .brand .title{ font-weight:700; font-size:18px; }
+    .brand .sub{ font-size:12px; color:var(--muted); }
+
+    .profile { display:flex; align-items:center; gap:10px; }
+    .profile .avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#efe6d8; display:inline-block; border:2px solid rgba(0,0,0,0.03); }
+    .profile .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .profile .name{ font-weight:600; font-size:14px; }
+
+    .layout{ display:flex; gap:0; min-height:60vh; }
+    .content{ padding:18px; flex:1; }
+
+    .card{ background:linear-gradient(180deg, var(--paper), #fff); padding:14px; border-radius:12px; box-shadow: 0 4px 14px rgba(36,28,22,0.06); border:1px solid rgba(0,0,0,0.03); }
+
+    .form-row{ display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
+    .field{ flex:1; min-width:120px; }
+    label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    
+    input[type="text"], input[type="file"], textarea, select{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); background:transparent; font-size:14px; box-sizing:border-box; }
+    
+button.btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 0;
+    cursor: pointer;
+    font-weight: 600;
+    background: #196e80;
+    color: var(--ui-contrast);
+    box-shadow: 0 6px 18px rgba(107, 79, 50, 0.12);
+}
+
+    button.ghost{ padding:8px 12px; background:transparent; border:1px solid rgba(0,0,0,0.06); color:var(--accent); border-radius:8px; cursor:pointer; }
+
+    .books-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-top:12px; }
+    .book{ padding:10px; border-radius:10px; border:1px solid rgba(0,0,0,0.03); background:linear-gradient(180deg,#fff,#fffaf2); display:flex; flex-direction:column; gap:8px; min-height:220px; }
+    .book .cover{ height:140px; border-radius:8px; background:linear-gradient(180deg,#efe6d8,#e8dccf); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--muted); overflow:hidden; }
+    .book .meta{ font-size:13px; }
+    .tags{ display:flex; gap:6px; flex-wrap:wrap; }
+    .tag{ background:rgba(107,79,50,0.08); padding:4px 8px; border-radius:999px; font-size:12px; color:var(--accent); }
+
+    .pagination{ display:flex; gap:8px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+    .pager-btn{ padding:6px 10px; border-radius:8px; border:0; cursor:pointer; background:transparent; }
+    .pager-btn.active{ background:var(--accent-2); color:white; }
+
+    .muted{ color:var(--muted); font-size:13px; }
+    .right{ margin-left:auto; }
+    .small{ font-size:12px; color:var(--muted); }
+    .center{ text-align:center;}
+    .qr-canvas{ width:140px; height:140px; margin:auto; display:block; }
+
+    #detailModal{ display:none; position:fixed; inset:10% 6%; z-index:80; background:transparent; transition:opacity .12s ease; }
+    #detailModal .card{ height:100%; overflow:auto; padding:18px; }
+    @media (max-width:800px){ #detailModal{ inset:6% 4%; } }
+
+    #toast{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%) translateY(10px); background:var(--accent); color:white; padding:10px 14px; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,.18); z-index:120; opacity:0; pointer-events:none; transition:opacity .18s ease, transform .18s ease; font-weight:600; }
+    #toast.show{ opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+
+    #confirmModal{ display:none; position:fixed; inset:0; z-index:130; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); }
+    #confirmModal .confirmBox{ max-width:420px; width:92%; background:var(--paper); padding:16px; border-radius:12px; box-shadow:var(--card-shadow); border:1px solid rgba(0,0,0,0.04); }
+    #confirmModal .confirmActions{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+
+    .muted-xx { color:#6b5a4a; font-size:13px; }
+    .actions-row{ display:flex; gap:8px; align-items:center; }
+    .cover img{ max-width:100%; height:100%; object-fit:cover; border-radius:6px; display:block; }
+
+    .add-header{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; }
+    @media (max-width:420px){ .book .cover{ height:120px; } .books-grid{ grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); } .topbar .brand .title{ font-size:16px; } }
+
+    @media (max-width:800px){
+      .app{ margin:0; border-radius:0; min-height:100vh; }
+      .topbar { position: sticky; top: 0; z-index:80; }
+      .content{ padding:14px 14px 110px 14px; transition: transform .2s ease; }
+     
+    .bottom-nav {
+        display: flex;
+        position: fixed;
+        right: 0;
+        left: 0;
+        bottom: 8px;
+        margin: 0 10px;
+        height: 56px;
+        background: linear-gradient(180deg, #196e80, #4fbad0);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        z-index: 140;
+        align-items: center;
+        justify-content: space-around;
+        padding: 6px 8px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+    }
+
+.bottom-nav .bn-item {
+        background: transparent;
+        border: 0;
+        outline: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #ffffff;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 8px;
+        min-width: 44px;
+    }
+
+      .bottom-nav .bn-item svg{ width:20px; height:20px; opacity:0.95; }
+    .bottom-nav .bn-item.active {
+        color: #47daf9;
+        font-weight: 700;
+    }
+      #detailModal{ inset:6% 3%; z-index:200; }
+      #detailModal .card{ padding:12px; max-height:88vh; overflow:auto; }
+      .no-scroll{ overflow:hidden; height:100vh; position:relative; }
+      #toast{ bottom:120px; z-index:210; }
+      #confirmModal{ z-index:220; }
+    }
+
+
+    /* --- Estilos para los controles ordenados en Home --- */
+.home-controls{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:14px;
+  align-items:start;
+}
+.home-controls .control{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.home-controls .control label{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:4px;
+  font-weight:600;
+}
+.home-controls .control .control-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.home-controls .control .control-row input[type="text"],
+.home-controls .control .control-row input[type="file"]{
+  flex:1;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:transparent;
+  font-size:14px;
+  box-sizing:border-box;
+}
+.home-controls .control .control-row button{
+  white-space:nowrap;
+}
+
+/* responsive: en pantallas pequeñas apilar */
+@media (max-width:760px){
+  .home-controls{
+    grid-template-columns: 1fr;
+  }
+  .home-controls .control .control-row{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .home-controls .control .control-row button{ width:100%; }
+}
+
+/* Reader embebido (PDF / EPUB) */
+.reader-controls { display:flex; gap:8px; align-items:center; justify-content:space-between; margin-bottom:8px; }
+#epubReader, .pdf-viewer { width:100%; height:80vh; border:1px solid rgba(0,0,0,0.04); border-radius:8px; background:white; overflow:auto; }
+.reader-btn { padding:8px 10px; border-radius:8px; border:0; cursor:pointer; background:var(--accent); color:var(--ui-contrast); font-weight:600; }
+.reader-ghost { padding:8px 10px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:transparent; color:var(--accent); cursor:pointer; }
+
+
+
+/* sugerencia (añadir a tu CSS) */
+.rating-tag { display:inline-block; padding:4px 8px; border-radius:8px; background:#f0f4f8; font-weight:600; font-size:12px; margin-top:6px; }
+.small.rating { font-weight:700; color:#333; margin-top:6px; }
+
+
+/* ---------- Rating badge (cartel) + estrellas ---------- */
+.rating-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:14px;
+  font-weight:700;
+  font-size:13px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  line-height:1;
+}
+
+/* color según rating */
+.rating-badge.malo      { background:#fff0f0; color:#9b1b1b; border:1px solid #f5c0c0; }
+.rating-badge.regular   { background:#fff8e6; color:#8a5a00; border:1px solid #f3d9a8; }
+.rating-badge.bueno     { background:#edfef4; color:#0b7b3a; border:1px solid #c9efd2; }
+.rating-badge.muy_bueno { background:#eef6ff; color:#0b5fa8; border:1px solid #cfe2ff; }
+
+/* contenedor de estrellas */
+.rating-badge .stars { display:flex; gap:4px; align-items:center; }
+
+/* cada estrella (tamaño) */
+.rating-badge .star { width:16px; height:16px; display:inline-block; }
+
+/* estrella llena / vacía (usa currentColor para mantener color del badge) */
+.rating-badge .star svg path { transition: fill .12s ease; }
+.rating-badge .star.filled svg path { fill: currentColor; opacity: .95; }
+.rating-badge .star.empty svg path { fill: rgba(0,0,0,0.12); opacity: .6; }
+
+/* etiqueta de texto al lado de las estrellas */
+/* ===== Adaptación responsiva sólo para la etiqueta de texto (label) ===== */
+.rating-badge {
+  /* ya lo tienes como inline-flex; nos aseguramos de permitir que los hijos se encojan */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  /* el resto de propiedades de .rating-badge que ya tienes se mantienen */
+}
+
+/* Label responsiva: puede encoger, truncarse con ellipsis y tiene ancho máximo */
+.rating-badge .label {
+  font-weight: 700;
+  font-size: 13px;        /* tamaño base */
+  margin-left: 4px;       /* conservar separación con estrellas */
+  white-space: nowrap;    /* evitar salto de línea dentro de la etiqueta */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+
+  /* permitir que la label se encoja dentro del inline-flex */
+  flex: 1 1 auto;         /* puede crecer y encoger según espacio disponible */
+  min-width: 0;           /* importante para que text-overflow funcione en flex children */
+
+  /* ancho máximo razonable (ajusta si quieres) */
+  max-width: 140px;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 420px) {
+  .rating-badge .label {
+    font-size: 12px;      /* reducir un poco la letra */
+    max-width: 110px;     /* menos ancho disponible en móvil */
+    padding: 0 4px;       /* un poco de separación interior opcional */
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 320px) {
+  .rating-badge .label {
+    font-size: 11px;
+    max-width: 80px;
+    /* Si prefieres ocultar el texto en dispositivos ultra-pequeños y dejar solo estrellas,
+       descomenta la siguiente línea: */
+    /* display: none; */
+  }
+}
+
+/* pequeña adaptación para tarjetas donde uses .rating-tag */
+.rating-tag { display:inline-block; margin-top:6px; }
+
+
+/* Recent books: grid con máximo 2 filas visuales.
+   En escritorio: 3 columnas (3+2 = 5 elementos -> 2 filas)
+   En tablet/móvil: 2 columnas (3 filas en total, pero visual queda bien) */
+#recentBooks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas en pantallas amplias */
+  gap: 12px;
+  align-items: start;
+}
+
+/* En pantallas estrechas, usar 2 columnas */
+@media (max-width: 900px) {
+  #recentBooks {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* En pantallas muy pequeñas, 1 columna */
+@media (max-width: 420px) {
+  #recentBooks {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Asegurar que cada tarjeta mantenga estructura vertical
+   y que los botones queden siempre abajo (para apariencia de filas) */
+#recentBooks .book {
+  display:flex;
+  flex-direction:column;
+  min-height: 220px; /* ajusta la altura según tu diseño */
+  padding: 10px;
+  box-sizing: border-box;
+  background: transparent; /* o el que uses en .book */
+}
+
+/* Control de la portada dentro de cada tarjeta */
+#recentBooks .book .cover {
+  height: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f4f4f4;
+}
+
+/* Si quieres que las imágenes ocupen todo el contenedor sin distorsionar: */
+#recentBooks .book .cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+  </style>
+</head>
+
+
+<body>
+
+<!-- LOGIN OVERLAY (con iconos y toggle mostrar contraseña) -->
+<style>
+  /* Overlay */
+#loginOverlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    background: linear-gradient(90deg, #000000c7, #12a9bf, #000000), url(https://cdn.pixabay.com/photo/2016/02/16/21/07/christmas-background-1204029_1280.jpg) no-repeat center center;
+    background-size: cover;
+    color: #fff;
+    padding: 18px;
+}
+
+
+#loginCard {
+    width: 100%;
+    max-width: 460px;
+    background: -webkit-linear-gradient(90deg, #1b0b20, #2f0246);
+    background: linear-gradient(90deg, #1b0b20, #12b1c7);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    text-align: center;
+}
+
+
+  #loginLogo { width:84px; height:84px; object-fit:contain; margin: 6px auto 8px; display:block; border-radius:10px; }
+  #loginCard h2 { margin:6px 0 2px; font-size:20px; }
+  #loginCard p { margin:0 0 12px; opacity:0.9; font-size:13px; }
+
+  /* Input wrapper con icono */
+  .inputWithIcon { position:relative; margin:8px 0; display:flex; align-items:center; }
+  .inputWithIcon .leftIcon {
+    position:absolute; left:10px; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; opacity:0.95;
+  }
+  .inputWithIcon input {
+    width:100%; padding:10px 40px 10px 38px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);
+    background:transparent; color:#fff; font-size:14px;
+  }
+  .inputWithIcon .togglePwdBtn {
+    position:absolute; right:8px; height:34px; min-width:34px; display:inline-flex; align-items:center; justify-content:center;
+    border-radius:6px; background:transparent; border:0; color:#fff; cursor:pointer; padding:4px;
+  }
+  #loginForm button[type="submit"] {
+    width:100%; padding:10px; margin-top:10px; border-radius:8px; border:0; 
+    background: -webkit-linear-gradient(90deg, #000000,#000000,#021392);background: linear-gradient(90deg, #000000,#000000,#021392);
+    color:#fff; font-weight:600;
+  }
+
+  #loginInfo { font-size:13px; margin-top:8px; opacity:0.95; }
+  #loginLockMsg { margin-top:8px; color:#ffb3b3; font-weight:700; }
+  #loginSmall { font-size:12px; opacity:0.85; margin-top:6px; }
+
+  /* SVG sizing */
+  .iconSvg { width:18px; height:18px; display:block; }
+  /* small responsive tweak */
+  @media (max-width:420px){ #loginCard{padding:16px} .inputWithIcon input{padding-left:36px} }

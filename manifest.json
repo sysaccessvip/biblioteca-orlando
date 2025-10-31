@@ -1,0 +1,16 @@
+{
+  "name": "Biblioteca Córdova Mory",
+  "short_name": "Biblioteca Córdova Mory",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#0b1220",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Biblioteca Córdova Mory", "url": "/index.html", "short_name": "Abrir" }
+  ]
+}
